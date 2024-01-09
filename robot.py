@@ -3,6 +3,7 @@
 import wpilib
 import wpilib.event
 import magicbot
+import phoenix6
 
 from components.chassis import Chassis
 
@@ -29,6 +30,9 @@ class MyRobot(magicbot.MagicRobot):
         self.field = wpilib.Field2d()
         wpilib.SmartDashboard.putData(self.field)
 
+        self.talonfx = phoenix6.hardware.TalonFX(13)
+        self.voltage = phoenix6.controls.VoltageOut(0)
+
     def rumble_for(self, intensity: float, duration: float):
         self.rumble_duration = duration
         self.rumble_timer.reset()
@@ -44,21 +48,25 @@ class MyRobot(magicbot.MagicRobot):
         pass
 
     def teleopPeriodic(self) -> None:
-        # Driving
-        spin_rate = 4
+        # # Driving
+        # spin_rate = 4
         drive_x = -rescale_js(self.gamepad.getLeftY(), 0.1) * self.max_speed
-        drive_y = -rescale_js(self.gamepad.getLeftX(), 0.1) * self.max_speed
-        drive_z = -rescale_js(self.gamepad.getRightX(), 0.1, exponential=2) * spin_rate
-        local_driving = self.gamepad.getBButton()
-        driver_inputs = (drive_x, drive_y, drive_z)
-        if local_driving:
-            self.chassis.drive_local(*driver_inputs)
-        else:
-            self.chassis.drive_field(*driver_inputs)
+        # drive_y = -rescale_js(self.gamepad.getLeftX(), 0.1) * self.max_speed
+        # drive_z = -rescale_js(self.gamepad.getRightX(), 0.1, exponential=2) * spin_rate
+        # local_driving = self.gamepad.getBButton()
+        # driver_inputs = (drive_x, drive_y, drive_z)
+        # if local_driving:
+        #     self.chassis.drive_local(*driver_inputs)
+        # else:
+        #     self.chassis.drive_field(*driver_inputs)
 
-        # stop rumble after time
-        if self.rumble_timer.hasElapsed(self.rumble_duration):
-            self.gamepad.setRumble(wpilib.XboxController.RumbleType.kBothRumble, 0)
+        # # stop rumble after time
+        # if self.rumble_timer.hasElapsed(self.rumble_duration):
+        #     self.gamepad.setRumble(wpilib.XboxController.RumbleType.kBothRumble, 0)
+
+        self.voltage.with_output(drive_x)
+        print(drive_x)
+        self.talonfx.set_control(self.voltage)
 
     def testInit(self) -> None:
         pass
