@@ -20,6 +20,14 @@ class Shooter:
         # Check if the shooter is the correct speed to shoot
         return True
 
+    @feedback
+    def actual_velocity(self) -> float:
+        pass
+
+    @feedback
+    def flywheel_error(self) -> float:
+        pass
+
     def execute(self) -> None:
         if self.deploying:
             if self.is_ready():
