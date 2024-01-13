@@ -1,32 +1,30 @@
-from magicbot import tunable
-import wpilib
+from magicbot import feedback, tunable
 
 
 class Shooter:
-    shooter_motor: wpilib.Talon
     shoot_speed = tunable(1.0)  # speed is tunable via NetworkTables
 
-    def __init__(self):
-        self.deployed = False
+    def __init__(self) -> None:
+        self.deploying = False
 
-    def shoot(self):
+    def deploy(self) -> None:
+        # Start spinning up the motors to get ready to shoot
+        self.deploying = True
+
+    def shoot(self) -> None:
+        # Shoot the game piece
         pass
 
-    def stop(self):
-        pass
-
-    def deploy(self):
-        """Causes the shooter motor to spin"""
-        self.deployed = True
-
-    def is_ready(self):
+    @feedback
+    def is_ready(self) -> bool:
+        # Check if the shooter is the correct speed to shoot
         return True
 
-    def execute(self):
-        """This gets called at the end of the control loop"""
-        if self.deployed:
-            self.shooter_motor.set(self.shoot_speed)
+    def execute(self) -> None:
+        if self.deploying:
+            if self.is_ready():
+                self.shoot()
+                self.deploying = False
         else:
-            self.shooter_motor.set(0)
-
-        self.deployed = False
+            # set the shooter speed to 0
+            pass
